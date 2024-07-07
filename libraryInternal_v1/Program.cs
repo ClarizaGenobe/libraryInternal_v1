@@ -28,7 +28,7 @@ namespace libraryInternal_v1
 
             //calls insert user data method
             insertUserData();
-            //shows the users in the database
+            //calls show the users in the database method
             showUsers();
         }     
 
