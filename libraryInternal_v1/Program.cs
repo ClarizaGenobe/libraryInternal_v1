@@ -26,10 +26,15 @@ namespace libraryInternal_v1
                 Console.WriteLine("Database exists already");
             }
 
+            //calls insert Book Data method
+            insertBookData();
+            //calls show books method
+            showBooks();
+
             //calls insert user data method
-            insertUserData();
+            //insertUserData();
             //calls show the users in the database method
-            showUsers();
+            //showUsers();
         }     
 
         //opens connection
@@ -60,16 +65,20 @@ namespace libraryInternal_v1
             {
                 while (result.Read())
                 {
-                    Console.WriteLine("First Name: " + result["first_name"] + ", Last Name: " + result["last_name"] + ", Role: " + result["role"] + ", DOB: " + result["dob"] + ", Year Level: " + result["year_level"] + ", Password: " + result["password"]);
+                    Console.WriteLine("First Name: " + result["first_name"] + ", Last Name: " + 
+                        result["last_name"] + ", Role: " + result["role"] + ", DOB: " + 
+                        result["dob"] + ", Year Level: " + result["year_level"] + ", Password: " +
+                        result["password"]);
                 }
             }
             closeConnection();
         }
 
-        static public void insertUserData(/*object sender, EventArgs e*/)
+        static public void insertUserData()
         {
             //reads the data for a new user
-            Console.WriteLine("Enter first name, last name, role, dob(yyyy-mm-dd), year level, password");
+            Console.WriteLine("Enter first name, last name, role, dob(yyyy-mm-dd), year level, " +
+                "password");
             string firstName = Console.ReadLine();
             string lastName = Console.ReadLine();
             string role = Console.ReadLine();
@@ -77,7 +86,8 @@ namespace libraryInternal_v1
             int yearLevel = Convert.ToInt32(Console.ReadLine());
             string password = Console.ReadLine();
 
-            string query = "INSERT INTO User (first_name, last_name, role, dob, year_level, password) VALUES (@first_name, @last_name, @role, @dob, @year_level, @password)";
+            string query = "INSERT INTO User (first_name, last_name, role, dob, year_level, " +
+                "password) VALUES (@first_name, @last_name, @role, @dob, @year_level, @password)";
             SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
 
             //opens connection, adds all the new data and closes connection
@@ -89,6 +99,41 @@ namespace libraryInternal_v1
             myCommand.Parameters.AddWithValue("@year_level", yearLevel);
             myCommand.Parameters.AddWithValue("@password", password);
             myCommand.ExecuteNonQuery();
+            closeConnection();
+        }
+        static public void insertBookData()
+        {
+            //reads the data for a new user
+            Console.WriteLine("Enter title and author.");
+            string title = Console.ReadLine();
+            string author = Console.ReadLine();
+
+            //inserts the new data into the database
+            string query = "INSERT INTO Book (title, author) VALUES (@title, @author)";
+            SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
+
+            //opens connection, adds all the new data and closes connection
+            openConnection();
+            myCommand.Parameters.AddWithValue("@title", title);
+            myCommand.Parameters.AddWithValue("@author", author);
+            myCommand.ExecuteNonQuery();
+            closeConnection();
+        }
+
+        static public void showBooks()
+        {
+            //selects the data from Book
+            string query = "SELECT * FROM Book";
+            SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
+            openConnection();
+            SQLiteDataReader result = myCommand.ExecuteReader();
+            if (result.HasRows)
+            {
+                while (result.Read())
+                {
+                    Console.WriteLine("Title: " + result["title"] + ", Author: " + result["author"]);
+                }
+            }
             closeConnection();
         }
     }
