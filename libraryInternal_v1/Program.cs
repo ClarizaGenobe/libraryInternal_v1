@@ -26,18 +26,43 @@ namespace libraryInternal_v1
                 Console.WriteLine("Database exists already");
             }
 
-            //calls insert Book Data method
-            insertBookData();
-            //calls show books method
-            showBooks();
+            Console.WriteLine("If you would like to add a book to the system, type A and " +
+                "then ENTER. If you would like to add a user to the system, type B and " +
+                "then ENTER. If you would like to exit the program, type C and then ENTER.");
+            Console.WriteLine("------------------------------------------------------------" +
+                "------------------------------------------------------------");
+            string userInput = Console.ReadLine();
 
-            //calls insert user data method
-            //insertUserData();
-            //calls show the users in the database method
-            //showUsers();
+            while(userInput != "C")
+            {
+                if (userInput == "A")
+                {
+                    //calls insert Book Data method
+                    insertBookData();
+                    //calls show books method
+                    showBooks();
+                }
+                else if(userInput == "B")
+                {
+                    //calls insert user data method
+                    insertUserData();
+                    //calls show the users in the database method
+                    showUsers();
+                }
+                else
+                {
+                    break;
+                }
+                Console.WriteLine("------------------------------------------------------------" +
+                    "------------------------------------------------------------");
+                Console.WriteLine("If you would like to add a book to the system, type A and " +
+                 "then ENTER. If you would like to add a user to the system, type B and " +
+                 "then ENTER. If you would like to exit the program, type C and then ENTER.");
+                userInput = Console.ReadLine();
+            }
         }     
 
-        //opens connection
+        //METHOD to open connection
         static public void openConnection()
         {
             if (sqlite_conn.State != System.Data.ConnectionState.Open)
@@ -46,7 +71,7 @@ namespace libraryInternal_v1
             }
         }
 
-        //closes connection
+        //METHOD to close connection
         static public void closeConnection()
         {
             if (sqlite_conn.State != System.Data.ConnectionState.Closed)
@@ -55,30 +80,12 @@ namespace libraryInternal_v1
             }
         }
 
-        static public void showUsers()
-        {
-            string query = "SELECT * FROM User";
-            SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
-            openConnection();
-            SQLiteDataReader result = myCommand.ExecuteReader();
-            if (result.HasRows)
-            {
-                while (result.Read())
-                {
-                    Console.WriteLine("First Name: " + result["first_name"] + ", Last Name: " + 
-                        result["last_name"] + ", Role: " + result["role"] + ", DOB: " + 
-                        result["dob"] + ", Year Level: " + result["year_level"] + ", Password: " +
-                        result["password"]);
-                }
-            }
-            closeConnection();
-        }
-
+        //METHOD to insert a new user
         static public void insertUserData()
         {
             //reads the data for a new user
-            Console.WriteLine("Enter first name, last name, role, dob(yyyy-mm-dd), year level, " +
-                "password");
+            Console.WriteLine("You would like to enter a new user into the system. Enter first name, " +
+                "last name, role, dob(yyyy-mm-dd), year level and password");
             string firstName = Console.ReadLine();
             string lastName = Console.ReadLine();
             string role = Console.ReadLine();
@@ -101,10 +108,33 @@ namespace libraryInternal_v1
             myCommand.ExecuteNonQuery();
             closeConnection();
         }
+
+        //METHOD to show users
+        static public void showUsers()
+        {
+            string query = "SELECT * FROM User";
+            SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
+            openConnection();
+            SQLiteDataReader result = myCommand.ExecuteReader();
+            if (result.HasRows)
+            {
+                while (result.Read())
+                {
+                    Console.WriteLine("First Name: " + result["first_name"] + ", Last Name: " +
+                        result["last_name"] + ", Role: " + result["role"] + ", DOB: " +
+                        result["dob"] + ", Year Level: " + result["year_level"] + ", Password: " +
+                        result["password"]);
+                }
+            }
+            closeConnection();
+        }
+
+        //METHOD to insert a new book
         static public void insertBookData()
         {
             //reads the data for a new user
-            Console.WriteLine("Enter title and author.");
+            Console.WriteLine("You would like to enter a new book into the system. Enter title and " +
+                "author.");
             string title = Console.ReadLine();
             string author = Console.ReadLine();
 
@@ -120,6 +150,7 @@ namespace libraryInternal_v1
             closeConnection();
         }
 
+        //METHOD to show books
         static public void showBooks()
         {
             //selects the data from Book
