@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Data;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Data.SQLite;
 using System.Reflection.Emit;
+using System.Xml;
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -26,9 +29,12 @@ namespace libraryInternal_v1
                 Console.WriteLine("Database exists already");
             }
 
-            Console.WriteLine("If you would like to add a book to the system, type A and " +
-                "then ENTER. If you would like to add a user to the system, type B and " +
-                "then ENTER. If you would like to exit the program, type C and then ENTER.");
+            Console.WriteLine("Type A and then ENTER if you would like to add a user to the " +
+                "system.");
+            Console.WriteLine("Type B and then ENTER if you would like to add a book to the " +
+                "system.");
+            Console.WriteLine("Type S and then ENTER if you would like to search the system.");
+            Console.WriteLine("Type E and then ENTER if you would like to exit the system.");
             Console.WriteLine("------------------------------------------------------------" +
                 "------------------------------------------------------------");
             string userInput = Console.ReadLine();
@@ -49,15 +55,22 @@ namespace libraryInternal_v1
                     //calls show the users in the database method
                     showUsers();
                 }
+                else if(userInput == "S")
+                {
+                    searchDatabase();
+                }
                 else
                 {
                     break;
                 }
                 Console.WriteLine("------------------------------------------------------------" +
                     "------------------------------------------------------------");
-                Console.WriteLine("If you would like to add a book to the system, type A and " +
-                 "then ENTER. If you would like to add a user to the system, type B and " +
-                 "then ENTER. If you would like to exit the program, type C and then ENTER.");
+                Console.WriteLine("Type A and then ENTER if you would like to add a user to the " +
+                "system.");
+                Console.WriteLine("Type B and then ENTER if you would like to add a book to the " +
+                    "system.");
+                Console.WriteLine("Type S and then ENTER if you would like to search the system.");
+                Console.WriteLine("Type E and then ENTER if you would like to exit the system.");
                 userInput = Console.ReadLine();
             }
         }     
@@ -79,6 +92,28 @@ namespace libraryInternal_v1
                 sqlite_conn.Close();
             }
         }
+
+        /*METHOD to log in to account
+        static public void logInToAccount()
+        {
+            string query = "SELECT * FROM User";
+            SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
+            openConnection();
+            SQLiteDataReader result = myCommand.ExecuteReader();
+            if (result.HasRows)
+            {
+                while (result.Read())
+                {
+                    object id = result["user_id"];
+                }
+            }
+            closeConnection();
+
+            Console.WriteLine("Please input your id number.");
+            int logIn = Convert.ToInt32(Console.ReadLine());
+
+            if (logIn = id) 
+        }*/
 
         //METHOD to insert a new user
         static public void insertUserData()
@@ -167,5 +202,31 @@ namespace libraryInternal_v1
             }
             closeConnection();
         }
+
+        //METHOD to search database
+        static public void searchDatabase()
+        {
+            Console.WriteLine("You would like to search the database. Please type in " +
+                "your search:");
+            string authorChosen = Console.ReadLine();
+            string query = "SELECT * FROM Book WHERE author =  @userSearch";
+            SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
+            openConnection();
+            myCommand.Parameters.AddWithValue("@userSearch", authorChosen);
+            SQLiteDataReader result = myCommand.ExecuteReader();
+            if (result.HasRows)
+            {
+                while (result.Read())
+                {
+                    Console.WriteLine("Title: " + result["title"] + ", Author: " + result["author"]);
+                }
+            }
+            else
+            {
+                Console.WriteLine("No search results");
+            }
+            closeConnection();
+        }
     }
 }
+
