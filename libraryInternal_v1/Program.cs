@@ -72,10 +72,15 @@ namespace libraryInternal_v1
             | userInput == "S" | userInput == "E");
         }
 
-        static public void printInstructions()
+        static public void printLines()
         {
             Console.WriteLine("------------------------------------------------------------" +
             "------------------------------------------------------------");
+        }
+
+        static public void printInstructions()
+        {
+            printLines();
             Console.WriteLine("Please choose your action:");
             Console.WriteLine("Type U and then ENTER if you would like to add a user to the " +
                 "system.");
@@ -85,8 +90,7 @@ namespace libraryInternal_v1
                 "the database");
             Console.WriteLine("Type S and then ENTER if you would like to search the system.");
             Console.WriteLine("Type E and then ENTER if you would like to exit the system.");
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
+            printLines();
         }
 
         //METHOD to open connection
@@ -111,12 +115,11 @@ namespace libraryInternal_v1
         static public void insertUserData()
         {
             //reads the data for a new user
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
+            printLines();
             Console.WriteLine("You would like to enter a new user into the system. Enter first name, " +
                 "last name, role, dob(yyyy-mm-dd), year level and password");
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
+            printLines();
+
             string firstName = Console.ReadLine();
             string lastName = Console.ReadLine();
             string role = Console.ReadLine();
@@ -140,16 +143,14 @@ namespace libraryInternal_v1
             closeConnection();
 
             Console.WriteLine("");
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
+            printLines();
             Console.WriteLine("Type U and then ENTER to add another user.");
             Console.WriteLine("Type R and then ENTER to return to the menu.");
             Console.WriteLine("Type E and then ENTER to exit the program.");
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
+            printLines();
 
             string userInput = Console.ReadLine();
-            while(userInput != "U" | userInput != "R" | userInput != "E")
+            while (userInput != "U" | userInput != "R" | userInput != "E")
             {
                 if (userInput == "U")
                 {
@@ -167,26 +168,22 @@ namespace libraryInternal_v1
                 }
                 else
                 {
-                    Console.WriteLine("------------------------------------------------------------" +
-                    "------------------------------------------------------------");
+                    printLines();
                     Console.WriteLine("Invalid input. Please type in your answer again.");
-                    Console.WriteLine("------------------------------------------------------------" +
-                    "------------------------------------------------------------");
+                    printLines();
                     userInput = Console.ReadLine();
                 }
-            }           
+            }
         }
 
         //METHOD to insert a new book
         static public void insertBookData()
         {
             //reads the data for a new user
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
+            printLines();
             Console.WriteLine("You would like to enter a new book into the system. Enter title and " +
                 "author.");
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
+            printLines();
             string title = Console.ReadLine();
             string author = Console.ReadLine();
 
@@ -202,16 +199,14 @@ namespace libraryInternal_v1
             closeConnection();
 
             Console.WriteLine("");
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
+            printLines();
             Console.WriteLine("Type B and then ENTER to add another book.");
             Console.WriteLine("Type R and then ENTER to return to the menu.");
             Console.WriteLine("Type E and then ENTER to exit the program.");
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
+            printLines();
 
             string userInput = Console.ReadLine();
-            while(userInput != "B" | userInput != "R" | userInput != "E")
+            while (userInput != "B" | userInput != "R" | userInput != "E")
             {
                 if (userInput == "B")
                 {
@@ -229,30 +224,26 @@ namespace libraryInternal_v1
                 }
                 else
                 {
-                    Console.WriteLine("------------------------------------------------------------" +
-                    "------------------------------------------------------------");
+                    printLines();
                     Console.WriteLine("Invalid input. Please type in your answer again.");
-                    Console.WriteLine("------------------------------------------------------------" +
-                    "------------------------------------------------------------");
+                    printLines();
                     userInput = Console.ReadLine();
                 }
-            }           
+            }
         }
 
         //METHOD to view database 
         static public void viewDatabase()
         {
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
+            printLines();
             Console.WriteLine("You would like to view the database.");
             Console.WriteLine("Type U and then ENTER if you would like to view Users.");
             Console.WriteLine("Type B and then ENTER if you would like to view Books.");
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
+            printLines();
 
             string viewingChoice = Console.ReadLine();
 
-            while(viewingChoice != "U" | viewingChoice != "B")
+            while (viewingChoice != "U" | viewingChoice != "B")
             {
                 if (viewingChoice == "U")
                 {
@@ -293,23 +284,19 @@ namespace libraryInternal_v1
                     }
                     else
                     {
-                        Console.WriteLine("------------------------------------------------------------" +
-                        "------------------------------------------------------------");
+                        printLines();
                         Console.WriteLine("Invalid input. Please type in your answer again.");
-                        Console.WriteLine("------------------------------------------------------------" +
-                        "------------------------------------------------------------");
+                        printLines();
                         viewingChoice = Console.ReadLine();
                     }
                     closeConnection();
                 }
                 Console.WriteLine("");
-                Console.WriteLine("------------------------------------------------------------" +
-                "------------------------------------------------------------");
+                printLines();
                 Console.WriteLine("Type V and then ENTER to continue viewing the database.");
                 Console.WriteLine("Type R and then ENTER to return to the menu.");
                 Console.WriteLine("Type E and then ENTER to exit the program.");
-                Console.WriteLine("------------------------------------------------------------" +
-                "------------------------------------------------------------");
+                printLines();
 
                 string userInput = Console.ReadLine();
                 while (userInput != "V" | userInput != "R" | userInput != "E")
@@ -330,84 +317,235 @@ namespace libraryInternal_v1
                     }
                     else
                     {
-                        Console.WriteLine("------------------------------------------------------------" +
-                        "------------------------------------------------------------");
+                        printLines(); 
                         Console.WriteLine("Invalid input. Please type in your answer again.");
-                        Console.WriteLine("------------------------------------------------------------" +
-                        "------------------------------------------------------------");
+                        printLines();
                         userInput = Console.ReadLine();
                     }
                 }
             }
         }
-       
+
         //METHOD to search database
         static public void searchDatabase()
         {
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
-            Console.WriteLine("You would like to search the database. Please type in " +
-                "your search:");
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
-            string authorChosen = Console.ReadLine();
-            string query = "SELECT * FROM Book WHERE author = @userSearch";
-            SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
-            openConnection();
-            myCommand.Parameters.AddWithValue("@userSearch", authorChosen);
-            SQLiteDataReader result = myCommand.ExecuteReader();
-            if (result.HasRows)
-            {
-                while (result.Read())
-                {
-                    Console.WriteLine("Here are the search results for '" + authorChosen + "'");
-                    Console.WriteLine("TITLE: " + result["title"] + ", AUTHOR: " + result["author"]);
-                }
-            }
-            else
-            {
-                Console.WriteLine("");
-                Console.WriteLine("No search results");
-            }
-            closeConnection();
-
-            Console.WriteLine("");
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
-            Console.WriteLine("Type S and then ENTER to continue searching.");
-            Console.WriteLine("Type R and then ENTER to return to the menu.");
-            Console.WriteLine("Type E and then ENTER to exit the program.");
-            Console.WriteLine("------------------------------------------------------------" +
-            "------------------------------------------------------------");
+            printLines();
+            Console.WriteLine("You would like to search the database.");
+            Console.WriteLine("If you would like to search for a USER, type U and " +
+            "then ENTER");
+            Console.WriteLine("If you would like to search for a BOOK, type B and " +
+            "then ENTER");
+            printLines();
 
             string userInput = Console.ReadLine();
-            while (userInput != "S" | userInput != "R" | userInput != "E")
+            while (userInput != "U" | userInput != "B")
             {
-                if (userInput == "S")
+                //USER
+                if (userInput == "U")
                 {
                     Console.Clear();
-                    searchDatabase();
+                    printLines();
+                    Console.WriteLine("You would like to search for a USER.");
+                    Console.WriteLine("If you would like to search for a ROLE, type R " +
+                    "and then ENTER");
+                    Console.WriteLine("If you would like to search for a YEAR LEVEL, type Y " +
+                    "and then ENTER");
+                    printLines();
+                    userInput = Console.ReadLine();
+                    //ROLE
+                    if (userInput == "R")
+                    {
+                        Console.Clear();
+                        printLines();
+                        Console.WriteLine("You would like to search for a ROLE. Please" +
+                            " input your search:");
+                        printLines();
+
+                        string roleChosen = Console.ReadLine();
+                        string query = "SELECT * FROM User WHERE role = @userSearch";
+                        SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
+                        openConnection();
+                        myCommand.Parameters.AddWithValue("@userSearch", roleChosen);
+                        SQLiteDataReader result = myCommand.ExecuteReader();
+                        if (result.HasRows)
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Here are the search results for '" + roleChosen + "'");
+                            while (result.Read())
+                            {
+                                Console.WriteLine("FIRST NAME: " + result["first_name"] +
+                                    " LAST NAME: " + result["last_name"] + " ROLE: " +
+                                    result["role"] + " DOB: " + result["dob"] +
+                                    " YEAR LEVEL: " + result["year_level"] + " PASSWORD: "
+                                    + result["password"]);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("No search results");
+                        }
+                    }
+                    //YEAR LEVEL
+                    else if (userInput == "Y")
+                    {
+                        Console.Clear();
+                        printLines();
+                        Console.WriteLine("You would like to search for a YEAR LEVEL. Please" +
+                            " input your search:");
+                        printLines();
+
+                        string yearLevelChosen = Console.ReadLine();
+                        string query = "SELECT * FROM User WHERE year_level = @userSearch";
+                        SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
+                        openConnection();
+                        myCommand.Parameters.AddWithValue("@userSearch", yearLevelChosen);
+                        SQLiteDataReader result = myCommand.ExecuteReader();
+                        if (result.HasRows)
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Here are the search results for '" + yearLevelChosen + "'");
+                            while (result.Read())
+                            {
+                                Console.WriteLine("FIRST NAME: " + result["first_name"] +
+                                    " LAST NAME: " + result["last_name"] + " ROLE: " +
+                                    result["role"] + " DOB: " + result["dob"] +
+                                    " YEAR LEVEL: " + result["year_level"] + " PASSWORD: "
+                                    + result["password"]);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("No search results");
+                        }
+                    }
                 }
-                else if (userInput == "R")
+                //BOOK
+                else if (userInput == "B")
                 {
                     Console.Clear();
-                    return;
-                }
-                else if (userInput == "E")
-                {
-                    System.Environment.Exit(-1);
+                    printLines();
+                    Console.WriteLine("You would like to search for a BOOK.");
+                    Console.WriteLine("If you would like to search for an AUTHOR, type A " +
+                    "and then ENTER");
+                    Console.WriteLine("If you would like to search for a TITLE, type T and " +
+                    "then ENTER");
+                    printLines();
+                    userInput = Console.ReadLine();
+                    //AUTHOR
+                    if (userInput == "A")
+                    {
+                        Console.Clear();
+                        printLines();
+                        Console.WriteLine("You would like to search for an AUTHOR. Please" +
+                            " input your search:");
+                        printLines();
+
+                        string authorChosen = Console.ReadLine();
+                        string query = "SELECT * FROM Book WHERE author = @userSearch";
+                        SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
+                        openConnection();
+                        myCommand.Parameters.AddWithValue("@userSearch", authorChosen);
+                        SQLiteDataReader result = myCommand.ExecuteReader();
+                        if (result.HasRows)
+                        {
+                            while (result.Read())
+                            {
+                                Console.WriteLine("");
+                                Console.WriteLine("Here are the search results for '" + authorChosen + "'");
+                                Console.WriteLine("TITLE: " + result["title"] + ", AUTHOR: " + result["author"]);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("No search results");
+                        }
+                    }
+                    //TITLE
+                    else if (userInput == "T")
+                    {
+                        Console.Clear();
+                        printLines();
+                        Console.WriteLine("You would like to search for a TITLE. Please" +
+                            " input your search:");
+                        printLines();
+
+                        string titleChosen = Console.ReadLine();
+                        string query = "SELECT * FROM Book WHERE title = @userSearch";
+                        SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
+                        openConnection();
+                        myCommand.Parameters.AddWithValue("@userSearch", titleChosen);
+                        SQLiteDataReader result = myCommand.ExecuteReader();
+                        if (result.HasRows)
+                        {
+                            while (result.Read())
+                            {
+                                Console.WriteLine("");
+                                Console.WriteLine("Here are the search results for '" + titleChosen + "'");
+                                Console.WriteLine("TITLE: " + result["title"] + ", AUTHOR: " + result["author"]);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("No search results");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("");
+                        printLines();
+                        Console.WriteLine("Invalid input. Please type in your answer again.");
+                        printLines();
+                        userInput = Console.ReadLine();
+                    }
                 }
                 else
                 {
                     Console.WriteLine("");
-                    Console.WriteLine("------------------------------------------------------------" +
-                    "------------------------------------------------------------");
+                    printLines();
                     Console.WriteLine("Invalid input. Please type in your answer again.");
-                    Console.WriteLine("------------------------------------------------------------" +
-                    "------------------------------------------------------------");
+                    printLines();
                     userInput = Console.ReadLine();
                 }
-            }
+                closeConnection();
+
+                Console.WriteLine("");
+                printLines();
+                Console.WriteLine("Type S and then ENTER to continue searching.");
+                Console.WriteLine("Type R and then ENTER to return to the menu.");
+                Console.WriteLine("Type E and then ENTER to exit the program.");
+                printLines();
+
+                userInput = Console.ReadLine();
+                while (userInput != "S" | userInput != "R" | userInput != "E")
+                {
+                    if (userInput == "S")
+                    {
+                        Console.Clear();
+                        searchDatabase();
+                    }
+                    else if (userInput == "R")
+                    {
+                        Console.Clear();
+                        return;
+                    }
+                    else if (userInput == "E")
+                    {
+                        System.Environment.Exit(-1);
+                    }
+                    else
+                    {
+                        Console.WriteLine("");
+                        printLines();
+                        Console.WriteLine("Invalid input. Please type in your answer again.");
+                        printLines();
+                        userInput = Console.ReadLine();
+                    }
+                }
+            }           
         }
     }
 }
