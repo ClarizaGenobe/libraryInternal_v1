@@ -31,6 +31,12 @@ namespace libraryInternal_v1
             }
             Console.Clear();
 
+            actionChoice();
+        }
+
+
+        static public void actionChoice()
+        {
             do
             {
                 printInstructions();
@@ -40,7 +46,7 @@ namespace libraryInternal_v1
                 if (userInput == "U")
                 {
                     Console.Clear();
-                    insertUserData(); 
+                    insertUserData();
                 }
                 //ADD BOOK
                 else if (userInput == "B")
@@ -81,13 +87,13 @@ namespace libraryInternal_v1
                 }
             } while (true);
         }
-
         static public void printLines()
         {
             Console.WriteLine("------------------------------------------------------------" +
             "------------------------------------------------------------");
         }
 
+        //METHOD to ask user what action they would like to take
         static public void printInstructions()
         {
             printLines();
@@ -127,15 +133,48 @@ namespace libraryInternal_v1
         {
             //reads the data for a new user
             printLines();
-            Console.WriteLine("You would like to enter a new user into the system. Enter first name, " +
-                "last name, role, dob(yyyy-mm-dd), year level and password");
+            Console.WriteLine("You would like to enter a new user into the system.");
             printLines();
 
+            Console.WriteLine("First name:");
             string firstName = Console.ReadLine();
+            Console.WriteLine("");
+
+            Console.WriteLine("Last name:");
             string lastName = Console.ReadLine();
-            string role = Console.ReadLine();
+            Console.WriteLine("");
+
+            Console.WriteLine("Role (either S or T):");
+            string role = Console.ReadLine().ToUpper();
+            Console.WriteLine("");
+
+            Console.WriteLine("Date of birth (yyyy-mm-dd):");
             DateTime dob = Convert.ToDateTime(Console.ReadLine());
-            int yearLevel = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("");
+
+            int yearLevel = 0;
+            //while (role is not("S" or "T"))
+            {
+                if (role == "S")
+                {
+                    Console.WriteLine("Year Level:");
+                    yearLevel = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine("");
+                }
+                else if (role == "T")
+                {
+                    yearLevel = 0;
+                    Console.WriteLine("");
+                }
+                /*else
+                {
+                    printLines();
+                    Console.WriteLine("Invalid input. Please type in your answer again.");
+                    printLines();
+                }*/
+            }
+
+            Console.WriteLine("Password:");
             string password = Console.ReadLine();
 
             string query = "INSERT INTO User (first_name, last_name, role, dob, year_level, " +
@@ -153,6 +192,7 @@ namespace libraryInternal_v1
             myCommand.ExecuteNonQuery();
             closeConnection();
 
+            //after adding a user
             do
             {
                 Console.WriteLine("");
@@ -171,7 +211,7 @@ namespace libraryInternal_v1
                 else if (userInput == "R")
                 {
                     Console.Clear();
-                    return;
+                    actionChoice();
                 }
                 else if (userInput == "E")
                 {
@@ -193,10 +233,13 @@ namespace libraryInternal_v1
         {
             //reads the data for a new user
             printLines();
-            Console.WriteLine("You would like to enter a new book into the system. Enter title and " +
-                "author.");
+            Console.WriteLine("You would like to enter a new book into the system.");
             printLines();
+
+            Console.WriteLine("Title:");
             string title = Console.ReadLine();
+            Console.WriteLine("");
+            Console.WriteLine("Author:");
             string author = Console.ReadLine();
 
             //inserts the new data into the database
@@ -210,6 +253,7 @@ namespace libraryInternal_v1
             myCommand.ExecuteNonQuery();
             closeConnection();
 
+            //after adding a book
             do
             {
                 Console.WriteLine("");
@@ -228,7 +272,7 @@ namespace libraryInternal_v1
                 else if (userInput == "R")
                 {
                     Console.Clear();
-                    return;
+                    actionChoice();
                 }
                 else if (userInput == "E")
                 {
@@ -248,16 +292,15 @@ namespace libraryInternal_v1
         //METHOD to view database 
         static public void viewDatabase()
         {
+            printLines();
+            Console.WriteLine("You would like to view the database.");
+            Console.WriteLine("Type U and then ENTER if you would like to view Users.");
+            Console.WriteLine("Type B and then ENTER if you would like to view Books.");
+            printLines();
+
+            string userInput = Console.ReadLine().ToUpper();
             do
             {
-                printLines();
-                Console.WriteLine("You would like to view the database.");
-                Console.WriteLine("Type U and then ENTER if you would like to view Users.");
-                Console.WriteLine("Type B and then ENTER if you would like to view Books.");
-                printLines();
-
-                string userInput = Console.ReadLine().ToUpper();
-
                 //USER
                 if (userInput == "U")
                 {
@@ -279,7 +322,7 @@ namespace libraryInternal_v1
                         }
                     }
                     closeConnection();
-                    break;
+                    //break;
                 }
                 //BOOK
                 else if (userInput == "B")
@@ -299,7 +342,7 @@ namespace libraryInternal_v1
                         }
                     }
                     closeConnection();
-                    break;
+                    //break;
                 }
                 //INVALID INPUT
                 else
@@ -308,45 +351,45 @@ namespace libraryInternal_v1
                     printLines();
                     Console.WriteLine("Invalid input. Please type in your answer again.");
                     printLines();
-                    //viewDatabase();
-                    //userInput = Console.ReadLine().ToUpper();
-                } 
-            } while (true);
-
-
-            do
-            {
-                Console.WriteLine("");
-                printLines();
-                Console.WriteLine("Type V and then ENTER to continue viewing the database.");
-                Console.WriteLine("Type R and then ENTER to return to the menu.");
-                Console.WriteLine("Type E and then ENTER to exit the program.");
-                printLines();
-
-                string userInput = Console.ReadLine().ToUpper();
-
-                if (userInput == "V")
-                {
-                    Console.Clear();
                     viewDatabase();
-                }
-                else if (userInput == "R")
-                {
-                    Console.Clear();
-                    return;
-                }
-                else if (userInput == "E")
-                {
-                    System.Environment.Exit(-1);
-                }
-                else
-                {
-                    Console.Clear();
-                    printLines();
-                    Console.WriteLine("Invalid input. Please type in your answer again.");
-                    printLines();
                     //userInput = Console.ReadLine().ToUpper();
                 }
+
+                //after viewing database
+                do
+                {
+                    Console.WriteLine("");
+                    printLines();
+                    Console.WriteLine("Type V and then ENTER to continue viewing the database.");
+                    Console.WriteLine("Type R and then ENTER to return to the menu.");
+                    Console.WriteLine("Type E and then ENTER to exit the program.");
+                    printLines();
+
+                    userInput = Console.ReadLine().ToUpper();
+
+                    if (userInput == "V")
+                    {
+                        Console.Clear();
+                        viewDatabase();
+                    }
+                    else if (userInput == "R")
+                    {
+                        Console.Clear();
+                        actionChoice();
+                    }
+                    else if (userInput == "E")
+                    {
+                        System.Environment.Exit(-1);
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        printLines();
+                        Console.WriteLine("Invalid input. Please type in your answer again.");
+                        printLines();
+                        //userInput = Console.ReadLine().ToUpper();
+                    }
+                } while (true);               
             } while (true);
         }
 
@@ -366,17 +409,17 @@ namespace libraryInternal_v1
                 if (userInput == "U")
                 {
                     Console.Clear();
-                    printLines();
-                    Console.WriteLine("You would like to search for a USER.");
-                    Console.WriteLine("Type R and then ENTER if you would like to search " +
-                        "for a ROLE");
-                    Console.WriteLine("Type Y and then ENTER if you would like to search " +
-                        "for a YEAR LEVEL");
-                    printLines();
-
-                    userInput = Console.ReadLine().ToUpper();
                     do
                     {
+                        printLines();
+                        Console.WriteLine("You would like to search for a USER.");
+                        Console.WriteLine("Type R and then ENTER if you would like to search " +
+                            "for a ROLE");
+                        Console.WriteLine("Type Y and then ENTER if you would like to search " +
+                            "for a YEAR LEVEL");
+                        printLines();
+
+                        userInput = Console.ReadLine().ToUpper();
                         //ROLE
                         if (userInput == "R")
                         {
@@ -410,6 +453,7 @@ namespace libraryInternal_v1
                             {
                                 Console.WriteLine("");
                                 Console.WriteLine("No search results");
+                                break;
                             }
                         }
                         //YEAR LEVEL
@@ -445,33 +489,35 @@ namespace libraryInternal_v1
                             {
                                 Console.WriteLine("");
                                 Console.WriteLine("No search results");
+                                break;
                             }
                         }
                         else
                         {
-                            Console.WriteLine("");
+                            Console.Clear();
                             printLines();
                             Console.WriteLine("Invalid input. Please type in your answer again.");
                             printLines();
-                            userInput = Console.ReadLine().ToUpper();
+                            //userInput = Console.ReadLine().ToUpper();
                         }
-                    } while (userInput is not ("R" or "Y"));
+                    } while (true);
                 }
                 //BOOK
                 else if (userInput == "B")
                 {
                     Console.Clear();
-                    printLines();
-                    Console.WriteLine("You would like to search for a BOOK.");
-                    Console.WriteLine("Type A and then ENTER if you would like to search " +
-                        "for an AUTHOR");
-                    Console.WriteLine("Type T and then ENTER if you would like to search " +
-                        "for a TITLE");
-                    printLines();
-
-                    userInput = Console.ReadLine().ToUpper();
                     do
                     {
+                        printLines();
+                        Console.WriteLine("You would like to search for a BOOK.");
+                        Console.WriteLine("Type A and then ENTER if you would like to search " +
+                            "for an AUTHOR");
+                        Console.WriteLine("Type T and then ENTER if you would like to search " +
+                            "for a TITLE");
+                        printLines();
+
+                        userInput = Console.ReadLine().ToUpper();
+
                         //AUTHOR
                         if (userInput == "A")
                         {
@@ -501,6 +547,7 @@ namespace libraryInternal_v1
                             {
                                 Console.WriteLine("");
                                 Console.WriteLine("No search results");
+                                break;
                             }
                         }
                         //TITLE
@@ -532,17 +579,18 @@ namespace libraryInternal_v1
                             {
                                 Console.WriteLine("");
                                 Console.WriteLine("No search results");
+                                break;
                             }
                         }
                         else
                         {
-                            Console.WriteLine("");
+                            Console.Clear();
                             printLines();
                             Console.WriteLine("Invalid input. Please type in your answer again.");
                             printLines();
-                            userInput = Console.ReadLine().ToUpper();
+                            //userInput = Console.ReadLine().ToUpper();
                         }
-                    } while (userInput is not ("A" or "T"));
+                    } while (true);
                 }
                 else
                 {
@@ -557,6 +605,7 @@ namespace libraryInternal_v1
 
                 do
                 {
+                    Console.WriteLine("");
                     printLines();
                     Console.WriteLine("Type S and then ENTER to continue searching.");
                     Console.WriteLine("Type R and then ENTER to return to the menu.");
@@ -572,7 +621,7 @@ namespace libraryInternal_v1
                     else if (userInput == "R")
                     {
                         Console.Clear();
-                        return;
+                        actionChoice();
                     }
                     else if (userInput == "E")
                     {
@@ -587,7 +636,7 @@ namespace libraryInternal_v1
                         printLines();
                         //userInput = Console.ReadLine().ToUpper();
                     }
-                } while (userInput is not ("S" or "R" or "E"));
+                } while (true);
             }
         }
 
