@@ -30,12 +30,18 @@ namespace libraryInternal_v1
             {
                 Console.WriteLine("Database exists already");
             }
-            Console.Clear();
+            ConsoleClear();
 
             //calls ActionChoice method
             ActionChoice();
         }
 
+        static public void ConsoleClear()
+        {
+            Console.Clear();
+            Console.WriteLine("\x1b[3J");
+            Console.Clear();
+        }
 
         //METHOD for user to pick what they would like to do
         static public void ActionChoice()
@@ -50,38 +56,38 @@ namespace libraryInternal_v1
                 //ISSUE BOOK 
                 if (userInput == "I")
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     IssueBook();
                 }
 
                 //ADD USER
                 if (userInput == "U")
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     InsertUserData();
                 }
                 //ADD BOOK
                 else if (userInput == "B")
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     InsertBookData();
                 }
                 //VIEW
                 else if (userInput == "V")
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     ViewDatabase();
                 }
                 //SEARCH
                 else if (userInput == "S")
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     SearchDatabase();
                 }
                 //DELETE
                 /*else if (userInput == "D")
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     DeleteEntry();
                 }*/
                 //EXIT
@@ -92,7 +98,7 @@ namespace libraryInternal_v1
                 //INVALID INPUT
                 else
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     PrintLines();
                     Console.WriteLine("Invalid input. Please type in your answer again.");
                     PrintLines();
@@ -150,48 +156,89 @@ namespace libraryInternal_v1
         //METHOD to issue book
         static public void IssueBook()
         {
-            PrintLines();
-            Console.WriteLine("You would like to issue a book.");
-            PrintLines();
-
+            //reads chosen user id
             PrintUsers();
             Console.WriteLine("");
             PrintLines();
             Console.WriteLine("Type in the ID of the USER you would like to issue a book to.");
             PrintLines();
+            int chosenUser = Convert.ToInt32(Console.ReadLine());
 
-            //reads chosen user id
-            //int chosenUser = Convert.ToInt32(Console.ReadLine());
-
+            //reads chosen book id
             PrintBooks();
             Console.WriteLine("");
             PrintLines();
             Console.WriteLine("Type in the ID of the BOOK you would like to issue out.");
             PrintLines();
+            int chosenBook = Convert.ToInt32(Console.ReadLine());
 
-            //reads chosen book id
-            //int chosenBook = Convert.ToInt32(Console.ReadLine());
-
-            //finding the user in the database
-            string query = "SELECT Book.title, Book.author * FROM USER * " +
-                "JOIN User_Book ON (User.user_id = User_Book.user_id) * " +
-                "JOIN Book ON (User_Book.book_id = Book.book_id * " +
-                "WHERE User.user_id = @user_id";
+            //inserts book and user ids into the User_Book table
+            string query = "INSERT INTO User_Book (user_id, book_id) VALUES (@user_id, @book_id)";
             SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
+            myCommand.Parameters.AddWithValue("@user_id", chosenUser);
+            myCommand.Parameters.AddWithValue("@book_id", chosenBook);
+            OpenConnection();
+            myCommand.ExecuteNonQuery();
+            CloseConnection();
+
+            //finding the user in the database and joins books and users across tables
+            query = "SELECT Book.title, Book.author FROM User " +
+                "JOIN User_Book ON (User.user_id = User_Book.user_id) " +
+                "JOIN Book ON (User_Book.book_id = Book.book_id) " +
+                "WHERE User.user_id = @user_id";
+            myCommand = new SQLiteCommand(query, sqlite_conn);
+            myCommand.Parameters.AddWithValue("@user_id", chosenUser);
             OpenConnection();
             SQLiteDataReader result = myCommand.ExecuteReader();
+            ConsoleClear();
 
             //prints out user books
             if (result.HasRows)
             {
-                Console.WriteLine("User Books:");
+                Console.WriteLine("User's Books:");
                 while (result.Read())
                 {
-                    Console.WriteLine("ID: " + result["user_book_id"] + " USER ID: " +
-                        result["user_id"] + " BOOK ID: " + result["book_id"]);
+                    Console.WriteLine("TITLE " + result["title"]
+                        + " AUTHOR " + result["author"]);
                 }
             }
             CloseConnection();
+
+            //after adding a user
+            do
+            {
+                Console.WriteLine("");
+                PrintLines();
+                Console.WriteLine("Type I and then ENTER to issue another book.");
+                Console.WriteLine("Type R and then ENTER to return to the menu.");
+                Console.WriteLine("Type E and then ENTER to exit the program.");
+                PrintLines();
+
+                //lets user choose whether to issue another book, go back to the menu or exit
+                //also has an invalid input
+                string userInput = Console.ReadLine().ToUpper();
+                if (userInput == "I")
+                {
+                    ConsoleClear();
+                    IssueBook();
+                }
+                else if (userInput == "R")
+                {
+                    ConsoleClear();
+                    ActionChoice();
+                }
+                else if (userInput == "E")
+                {
+                    System.Environment.Exit(-1);
+                }
+                else
+                {
+                    ConsoleClear();
+                    PrintLines();
+                    Console.WriteLine("Invalid input. Please type in your answer again.");
+                    PrintLines();
+                }
+            } while (true);
         }
 
         //METHOD to insert a new user
@@ -276,12 +323,12 @@ namespace libraryInternal_v1
                 string userInput = Console.ReadLine().ToUpper();
                 if (userInput == "U")
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     InsertUserData();
                 }
                 else if (userInput == "R")
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     ActionChoice();
                 }
                 else if (userInput == "E")
@@ -290,7 +337,7 @@ namespace libraryInternal_v1
                 }
                 else
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     PrintLines();
                     Console.WriteLine("Invalid input. Please type in your answer again.");
                     PrintLines();
@@ -338,12 +385,12 @@ namespace libraryInternal_v1
                 
                 if (userInput == "B")
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     InsertBookData();
                 }
                 else if (userInput == "R")
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     ActionChoice();
                 }
                 else if (userInput == "E")
@@ -352,7 +399,7 @@ namespace libraryInternal_v1
                 }
                 else
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     PrintLines();
                     Console.WriteLine("Invalid input. Please type in your answer again.");
                     PrintLines();
@@ -364,7 +411,7 @@ namespace libraryInternal_v1
         static public void PrintUsers()
         {
             //connects to database and selects users
-            Console.Clear();
+            ConsoleClear();
             string query = "SELECT * FROM User";
             SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
             OpenConnection();
@@ -390,7 +437,8 @@ namespace libraryInternal_v1
         static public void PrintBooks()
         {
             //connects to database and selects books
-            Console.Clear();
+            ConsoleClear();
+
             string query = "SELECT * FROM Book";
             SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
             OpenConnection();
@@ -436,7 +484,7 @@ namespace libraryInternal_v1
                 //INVALID INPUT
                 else
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     PrintLines();
                     Console.WriteLine("Invalid input. Please type in your answer again.");
                     PrintLines();
@@ -462,12 +510,12 @@ namespace libraryInternal_v1
                     //invalid input too
                     if (userInput == "V")
                     {
-                        Console.Clear();
+                        ConsoleClear();
                         ViewDatabase();
                     }
                     else if (userInput == "R")
                     {
-                        Console.Clear();
+                        ConsoleClear();
                         ActionChoice();
                     }
                     else if (userInput == "E")
@@ -476,7 +524,7 @@ namespace libraryInternal_v1
                     }
                     else
                     {
-                        Console.Clear();
+                        ConsoleClear();
                         PrintLines();
                         Console.WriteLine("Invalid input. Please type in your answer again.");
                         PrintLines();
@@ -502,7 +550,7 @@ namespace libraryInternal_v1
                 //USER
                 if (userInput == "U")
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     do
                     {
                         PrintLines();
@@ -521,7 +569,7 @@ namespace libraryInternal_v1
                         //ROLE
                         if (userInput == "R")
                         {
-                            Console.Clear();
+                            ConsoleClear();
                             PrintLines();
                             Console.WriteLine("You would like to search for a ROLE. Please" +
                                 " input your search:");
@@ -563,7 +611,7 @@ namespace libraryInternal_v1
                         //YEAR LEVEL
                         else if (userInput == "Y")
                         {
-                            Console.Clear();
+                            ConsoleClear();
                             PrintLines();
                             Console.WriteLine("You would like to search for a YEAR LEVEL. Please" +
                                 " input your search:");
@@ -604,7 +652,7 @@ namespace libraryInternal_v1
                         //ID
                         else if (userInput == "I")
                         {
-                            Console.Clear();
+                            ConsoleClear();
                             PrintLines();
                             Console.WriteLine("You would like to search for an ID. Please" +
                                 " input your search:");
@@ -645,7 +693,7 @@ namespace libraryInternal_v1
                         //INVALID INPUT
                         else
                         {
-                            Console.Clear();
+                            ConsoleClear();
                             PrintLines();
                             Console.WriteLine("Invalid input. Please type in your answer again.");
                             PrintLines();
@@ -655,7 +703,7 @@ namespace libraryInternal_v1
                 //BOOK
                 else if (userInput == "B")
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     do
                     {
                         PrintLines();
@@ -672,7 +720,7 @@ namespace libraryInternal_v1
                         //AUTHOR
                         if (userInput == "A")
                         {
-                            Console.Clear();
+                            ConsoleClear();
                             PrintLines();
                             Console.WriteLine("You would like to search for an AUTHOR. Please" +
                                 " input your search:");
@@ -709,7 +757,7 @@ namespace libraryInternal_v1
                         //TITLE
                         else if (userInput == "T")
                         {
-                            Console.Clear();
+                            ConsoleClear();
                             PrintLines();
                             Console.WriteLine("You would like to search for a TITLE. Please" +
                                 " input your search:");
@@ -746,7 +794,7 @@ namespace libraryInternal_v1
                         //INVALID INPUT
                         else
                         {
-                            Console.Clear();
+                            ConsoleClear();
                             PrintLines();
                             Console.WriteLine("Invalid input. Please type in your answer again.");
                             PrintLines();
@@ -756,7 +804,7 @@ namespace libraryInternal_v1
                 //INVALID INPUT
                 else
                 {
-                    Console.Clear();
+                    ConsoleClear();
                     PrintLines();
                     Console.WriteLine("Invalid input. Please type in your answer again.");
                     PrintLines();
@@ -780,12 +828,12 @@ namespace libraryInternal_v1
                     //also invalid input
                     if (userInput == "S")
                     {
-                        Console.Clear();
+                        ConsoleClear();
                         SearchDatabase();
                     }
                     else if (userInput == "R")
                     {
-                        Console.Clear();
+                        ConsoleClear();
                         ActionChoice();
                     }
                     else if (userInput == "E")
@@ -794,7 +842,7 @@ namespace libraryInternal_v1
                     }
                     else
                     {
-                        Console.Clear();
+                        ConsoleClear();
                         Console.WriteLine("");
                         PrintLines();
                         Console.WriteLine("Invalid input. Please type in your answer again.");
