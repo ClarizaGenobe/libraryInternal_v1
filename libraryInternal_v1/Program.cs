@@ -61,7 +61,7 @@ namespace libraryInternal_v1
                 }
 
                 //ADD USER
-                if (userInput == "U")
+                else if (userInput == "U")
                 {
                     ConsoleClear();
                     InsertUserData();
@@ -84,12 +84,6 @@ namespace libraryInternal_v1
                     ConsoleClear();
                     SearchDatabase();
                 }
-                //DELETE
-                /*else if (userInput == "D")
-                {
-                    ConsoleClear();
-                    DeleteEntry();
-                }*/
                 //EXIT
                 else if (userInput == "E")
                 {
@@ -130,7 +124,6 @@ namespace libraryInternal_v1
             Console.WriteLine("");
             Console.WriteLine("Type S and then ENTER if you would like to search the system.");
             Console.WriteLine("");
-            //Console.WriteLine("Type D and then ENTER if you would like to delete an entry.");
             Console.WriteLine("Type E and then ENTER if you would like to exit the system.");
             PrintLines();
         }
@@ -457,22 +450,70 @@ namespace libraryInternal_v1
             CloseConnection();
         }
 
+        //METHOD to print issues
+        static public void PrintIssues()
+        {
+            //reads chosen user id
+            PrintUsers();
+            Console.WriteLine("");
+            PrintLines();
+            Console.WriteLine("Type in the ID of the USER you would like to view the issues of.");
+            PrintLines();
+            int chosenUser = Convert.ToInt32(Console.ReadLine());
+
+            //inserts book and user ids into the User_Book table
+            string query = "INSERT INTO User_Book (user_id) VALUES (@user_id)";
+            SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
+            myCommand.Parameters.AddWithValue("@user_id", chosenUser);
+            OpenConnection();
+            myCommand.ExecuteNonQuery();
+            CloseConnection();
+
+            //finding the user in the database and joins books and users across tables
+            query = "SELECT Book.title, Book.author FROM User " +
+                "JOIN User_Book ON (User.user_id = User_Book.user_id) " +
+                "JOIN Book ON (User_Book.book_id = Book.book_id) " +
+                "WHERE User.user_id = @user_id";
+            myCommand = new SQLiteCommand(query, sqlite_conn);
+            myCommand.Parameters.AddWithValue("@user_id", chosenUser);
+            OpenConnection();
+            SQLiteDataReader result = myCommand.ExecuteReader();
+            ConsoleClear();
+
+            //prints out user books
+            if (result.HasRows)
+            {
+                Console.WriteLine("User's Books:");
+                while (result.Read())
+                {
+                    Console.WriteLine("TITLE " + result["title"]
+                        + " AUTHOR " + result["author"]);
+                }
+            }
+            CloseConnection();
+        }
 
         //METHOD to view database 
         static public void ViewDatabase()
         {
             PrintLines();
             Console.WriteLine("You would like to view the database.");
+            Console.WriteLine("Type I and then ENTER if you would like to view a User's issued books.");
             Console.WriteLine("Type U and then ENTER if you would like to view Users.");
-            Console.WriteLine("Type B and then ENTER if you would like to view Books.");
+            Console.WriteLine("Type B and then ENTER if you would like to view Books.");           
             PrintLines();
 
             //gets user input
             string userInput = Console.ReadLine().ToUpper();
             do
             {
+                //USER'S BOOKS
+                if (userInput == "I")
+                {
+                    PrintIssues();
+                }
                 //USER
-                if (userInput == "U")
+                else if (userInput == "U")
                 {
                     PrintUsers();
                 }
@@ -851,53 +892,5 @@ namespace libraryInternal_v1
                 } while (true);
             }
         }
-
-        /*
-        static public void DeleteEntry()
-        {
-            PrintLines();
-            Console.WriteLine("You would like to delete an entry off the database.");
-            Console.WriteLine("Type U and then ENTER if you would like to delete a USER");
-            Console.WriteLine("Type B and then ENTER if you would like to delete a BOOK");
-            PrintLines();
-
-            //string userInput = Console.ReadLine();
-
-            //if(userInput == "U")
-            {
-                int id = Convert.ToInt32(Console.ReadLine());
-
-                string idChosen = Console.ReadLine();
-                string query = "DELETE * FROM Book WHERE id = @userSearch";
-                SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
-                openConnection();
-                myCommand.Parameters.AddWithValue("@userSearch", idChosen);
-                SQLiteDataReader result = myCommand.ExecuteReader();
-                if (result.HasRows)
-                {
-                    while (result.Read())
-                    {
-                        //Console.WriteLine("");
-                        //Console.WriteLine("Here are the search results for '" + idChosen + "'");
-                        //Console.WriteLine("TITLE: " + result["title"] + ", AUTHOR: " + result["author"]);
-                    }
-                    //break;
-                }
-                else
-                {
-                    Console.WriteLine("");
-                    Console.WriteLine("No search results");
-                }
-
-            }
-            //else if(userInput == "B")
-            {
-
-            }
-            //else
-            {
-
-            }
-        }*/
     }
 }
