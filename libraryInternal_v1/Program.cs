@@ -32,8 +32,8 @@ namespace libraryInternal_v1
             }
             ConsoleClear();
 
-            //calls ActionChoice method
-            ActionChoice();
+            //calls MainMenu method
+            MainMenu();
         }
 
         static public void ConsoleClear()
@@ -44,7 +44,7 @@ namespace libraryInternal_v1
         }
 
         //METHOD for user to pick what they would like to do
-        static public void ActionChoice()
+        static public void MainMenu()
         {
             do
             {
@@ -58,6 +58,13 @@ namespace libraryInternal_v1
                 {
                     ConsoleClear();
                     IssueBook();
+                }
+
+                //RETURN BOOK
+                else if (userInput == "R")
+                {
+                    Console.Clear();
+                    ReturnBook();
                 }
 
                 //ADD USER
@@ -112,19 +119,20 @@ namespace libraryInternal_v1
         {
             PrintLines();
             Console.WriteLine("Please choose your action:");
-            Console.WriteLine("Type I and then ENTER if you would like to issue a book.");
-            Console.WriteLine("");
-            Console.WriteLine("Type U and then ENTER if you would like to add a user to the " +
+            Console.WriteLine("Type I and then ENTER to issue a book.");
+            Console.WriteLine("Type R and then ENTER to return a book.");
+            //Console.WriteLine("");
+            Console.WriteLine("Type U and then ENTER to add a user to the " +
                 "system.");
-            Console.WriteLine("Type B and then ENTER if you would like to add a book to the " +
+            Console.WriteLine("Type B and then ENTER to add a book to the " +
                 "system.");
-            Console.WriteLine("");
-            Console.WriteLine("Type V and then ENTER if you would like to view the contents of " +
+           // Console.WriteLine("");
+            Console.WriteLine("Type V and then ENTER to view the contents of " +
                 "the database");
-            Console.WriteLine("");
-            Console.WriteLine("Type S and then ENTER if you would like to search the system.");
-            Console.WriteLine("");
-            Console.WriteLine("Type E and then ENTER if you would like to exit the system.");
+            //Console.WriteLine("");
+            Console.WriteLine("Type S and then ENTER to search the system.");
+           // Console.WriteLine("");
+            Console.WriteLine("Type E and then ENTER to exit the system.");
             PrintLines();
         }
 
@@ -153,6 +161,7 @@ namespace libraryInternal_v1
             PrintUsers();
             Console.WriteLine("");
             PrintLines();
+            Console.WriteLine("You would like to issue a book to a user.");
             Console.WriteLine("Type in the ID of the USER you would like to issue a book to.");
             PrintLines();
             int chosenUser = Convert.ToInt32(Console.ReadLine());
@@ -203,7 +212,7 @@ namespace libraryInternal_v1
                 Console.WriteLine("");
                 PrintLines();
                 Console.WriteLine("Type I and then ENTER to issue another book.");
-                Console.WriteLine("Type R and then ENTER to return to the menu.");
+                Console.WriteLine("Type M and then ENTER to return to the menu.");
                 Console.WriteLine("Type E and then ENTER to exit the program.");
                 PrintLines();
 
@@ -215,10 +224,118 @@ namespace libraryInternal_v1
                     ConsoleClear();
                     IssueBook();
                 }
-                else if (userInput == "R")
+                else if (userInput == "M")
                 {
                     ConsoleClear();
-                    ActionChoice();
+                    MainMenu();
+                }
+                else if (userInput == "E")
+                {
+                    System.Environment.Exit(-1);
+                }
+                else
+                {
+                    ConsoleClear();
+                    PrintLines();
+                    Console.WriteLine("Invalid input. Please type in your answer again.");
+                    PrintLines();
+                }
+            } while (true);
+        }
+
+        //METHOD to return book
+        static public void ReturnBook()
+        {
+            //reads chosen user id
+            PrintUsers();
+            Console.WriteLine("");
+            PrintLines();
+            Console.WriteLine("You would like to return a book.");
+            Console.WriteLine("Type in the ID of the USER you would like to return a book for.");
+            PrintLines();
+            int chosenUser = Convert.ToInt32(Console.ReadLine());
+
+            //finding the user in the database and joins books and users across tables
+            string query = "SELECT User_Book.user_book_id, Book.title, Book.author, " +
+                "Book.book_id FROM User " +
+                "JOIN User_Book ON (User.user_id = User_Book.user_id) " +
+                "JOIN Book ON (User_Book.book_id = Book.book_id) " +
+                "WHERE User.user_id = @user_id;";
+            SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
+            myCommand.Parameters.AddWithValue("@user_id", chosenUser);
+            OpenConnection();
+            SQLiteDataReader result = myCommand.ExecuteReader();
+            ConsoleClear();
+
+            //prints out user's books
+            if (result.HasRows)
+            {
+                Console.WriteLine("User's Books:");
+                while (result.Read())
+                {
+                    Console.WriteLine("ID: " + result["user_book_id"] + " TITLE: " + result["title"]
+                        + " AUTHOR: " + result["author"]);
+                }
+            }
+
+            //reads chosen user's book id TO BE RETURNED
+            PrintLines();
+            Console.WriteLine("Type in the ID of the book you would like to be returned.");
+            PrintLines();
+            int chosenBook = Convert.ToInt32(Console.ReadLine());
+
+            //finding the book in the database and deleting it
+            query = "DELETE FROM User_Book WHERE user_book_id = @user_book_id;";
+            myCommand = new SQLiteCommand(query, sqlite_conn);
+            myCommand.Parameters.AddWithValue("@user_book_id", chosenBook);
+            result = myCommand.ExecuteReader();
+
+            //selecting user book data to print 
+            query = "SELECT User_Book.user_book_id, Book.title, Book.author, " +
+                "Book.book_id FROM User " +
+                "JOIN User_Book ON (User.user_id = User_Book.user_id) " +
+                "JOIN Book ON (User_Book.book_id = Book.book_id) " +
+                "WHERE User.user_id = @user_id;";
+            myCommand = new SQLiteCommand(query, sqlite_conn);
+            myCommand.Parameters.AddWithValue("@user_id", chosenUser);
+            OpenConnection();
+            result = myCommand.ExecuteReader();
+            ConsoleClear();
+
+            //prints out user's books
+            if (result.HasRows)
+            {
+                Console.WriteLine("User's Books:");
+                while (result.Read())
+                {
+                    Console.WriteLine("ID: " + result["user_book_id"] + " TITLE: " + result["title"]
+                        + " AUTHOR: " + result["author"]);
+                }
+            }
+            CloseConnection();
+
+            //after adding a user
+            do
+            {
+                Console.WriteLine("");
+                PrintLines();
+                Console.WriteLine("Type R and then ENTER to return another book.");
+                Console.WriteLine("Type M and then ENTER to return to the menu.");
+                Console.WriteLine("Type E and then ENTER to exit the program.");
+                PrintLines();
+
+                //lets user choose whether to issue another book, go back to the menu or exit
+                //also has an invalid input
+                string userInput = Console.ReadLine().ToUpper();
+                if (userInput == "R")
+                {
+                    ConsoleClear();
+                    ReturnBook();
+                }
+                else if (userInput == "M")
+                {
+                    ConsoleClear();
+                    MainMenu();
                 }
                 else if (userInput == "E")
                 {
@@ -307,7 +424,7 @@ namespace libraryInternal_v1
                 Console.WriteLine("");
                 PrintLines();
                 Console.WriteLine("Type U and then ENTER to add another user.");
-                Console.WriteLine("Type R and then ENTER to return to the menu.");
+                Console.WriteLine("Type M and then ENTER to return to the menu.");
                 Console.WriteLine("Type E and then ENTER to exit the program.");
                 PrintLines();
 
@@ -319,10 +436,10 @@ namespace libraryInternal_v1
                     ConsoleClear();
                     InsertUserData();
                 }
-                else if (userInput == "R")
+                else if (userInput == "M")
                 {
                     ConsoleClear();
-                    ActionChoice();
+                    MainMenu();
                 }
                 else if (userInput == "E")
                 {
@@ -368,7 +485,7 @@ namespace libraryInternal_v1
                 Console.WriteLine("");
                 PrintLines();
                 Console.WriteLine("Type B and then ENTER to add another book.");
-                Console.WriteLine("Type R and then ENTER to return to the menu.");
+                Console.WriteLine("Type M and then ENTER to return to the menu.");
                 Console.WriteLine("Type E and then ENTER to exit the program.");
                 PrintLines();
 
@@ -381,10 +498,10 @@ namespace libraryInternal_v1
                     ConsoleClear();
                     InsertBookData();
                 }
-                else if (userInput == "R")
+                else if (userInput == "M")
                 {
                     ConsoleClear();
-                    ActionChoice();
+                    MainMenu();
                 }
                 else if (userInput == "E")
                 {
@@ -398,6 +515,50 @@ namespace libraryInternal_v1
                     PrintLines();
                 }
             } while (true);
+        }
+
+        //METHOD to print issues
+        static public void PrintIssues()
+        {
+            //reads chosen user id
+            PrintUsers();
+            Console.WriteLine("");
+            PrintLines();
+            Console.WriteLine("You would like to view a User's issued books.");
+            Console.WriteLine("Type in the ID of the USER you would like to view the issues of.");
+            PrintLines();
+            int chosenUser = Convert.ToInt32(Console.ReadLine());
+
+            //inserts book and user ids into the User_Book table
+            string query = "INSERT INTO User_Book (user_id) VALUES (@user_id)";
+            SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
+            myCommand.Parameters.AddWithValue("@user_id", chosenUser);
+            OpenConnection();
+            myCommand.ExecuteNonQuery();
+            CloseConnection();
+
+            //finding the user in the database and joins books and users across tables
+            query = "SELECT Book.title, Book.author, Book.book_id FROM User " +
+                "JOIN User_Book ON (User.user_id = User_Book.user_id) " +
+                "JOIN Book ON (User_Book.book_id = Book.book_id) " +
+                "WHERE User.user_id = @user_id";
+            myCommand = new SQLiteCommand(query, sqlite_conn);
+            myCommand.Parameters.AddWithValue("@user_id", chosenUser);
+            OpenConnection();
+            SQLiteDataReader result = myCommand.ExecuteReader();
+            ConsoleClear();
+
+            //prints out user books
+            if (result.HasRows)
+            {
+                Console.WriteLine("User's Books:");
+                while (result.Read())
+                {
+                    Console.WriteLine("ID: " + result["book_id"] + " TITLE: " + result["title"]
+                        + " AUTHOR: " + result["author"]);
+                }
+            }
+            CloseConnection();
         }
 
         //METHOD to print Users
@@ -450,49 +611,6 @@ namespace libraryInternal_v1
             CloseConnection();
         }
 
-        //METHOD to print issues
-        static public void PrintIssues()
-        {
-            //reads chosen user id
-            PrintUsers();
-            Console.WriteLine("");
-            PrintLines();
-            Console.WriteLine("Type in the ID of the USER you would like to view the issues of.");
-            PrintLines();
-            int chosenUser = Convert.ToInt32(Console.ReadLine());
-
-            //inserts book and user ids into the User_Book table
-            string query = "INSERT INTO User_Book (user_id) VALUES (@user_id)";
-            SQLiteCommand myCommand = new SQLiteCommand(query, sqlite_conn);
-            myCommand.Parameters.AddWithValue("@user_id", chosenUser);
-            OpenConnection();
-            myCommand.ExecuteNonQuery();
-            CloseConnection();
-
-            //finding the user in the database and joins books and users across tables
-            query = "SELECT Book.title, Book.author FROM User " +
-                "JOIN User_Book ON (User.user_id = User_Book.user_id) " +
-                "JOIN Book ON (User_Book.book_id = Book.book_id) " +
-                "WHERE User.user_id = @user_id";
-            myCommand = new SQLiteCommand(query, sqlite_conn);
-            myCommand.Parameters.AddWithValue("@user_id", chosenUser);
-            OpenConnection();
-            SQLiteDataReader result = myCommand.ExecuteReader();
-            ConsoleClear();
-
-            //prints out user books
-            if (result.HasRows)
-            {
-                Console.WriteLine("User's Books:");
-                while (result.Read())
-                {
-                    Console.WriteLine("TITLE " + result["title"]
-                        + " AUTHOR " + result["author"]);
-                }
-            }
-            CloseConnection();
-        }
-
         //METHOD to view database 
         static public void ViewDatabase()
         {
@@ -540,7 +658,7 @@ namespace libraryInternal_v1
                     Console.WriteLine("");
                     PrintLines();
                     Console.WriteLine("Type V and then ENTER to continue viewing the database.");
-                    Console.WriteLine("Type R and then ENTER to return to the menu.");
+                    Console.WriteLine("Type M and then ENTER to return to the menu.");
                     Console.WriteLine("Type E and then ENTER to exit the program.");
                     PrintLines();
 
@@ -554,10 +672,10 @@ namespace libraryInternal_v1
                         ConsoleClear();
                         ViewDatabase();
                     }
-                    else if (userInput == "R")
+                    else if (userInput == "M")
                     {
                         ConsoleClear();
-                        ActionChoice();
+                        MainMenu();
                     }
                     else if (userInput == "E")
                     {
@@ -858,7 +976,7 @@ namespace libraryInternal_v1
                     Console.WriteLine("");
                     PrintLines();
                     Console.WriteLine("Type S and then ENTER to continue searching.");
-                    Console.WriteLine("Type R and then ENTER to return to the menu.");
+                    Console.WriteLine("Type M and then ENTER to return to the menu.");
                     Console.WriteLine("Type E and then ENTER to exit the program.");
                     PrintLines();
 
@@ -872,10 +990,10 @@ namespace libraryInternal_v1
                         ConsoleClear();
                         SearchDatabase();
                     }
-                    else if (userInput == "R")
+                    else if (userInput == "M")
                     {
                         ConsoleClear();
-                        ActionChoice();
+                        MainMenu();
                     }
                     else if (userInput == "E")
                     {
